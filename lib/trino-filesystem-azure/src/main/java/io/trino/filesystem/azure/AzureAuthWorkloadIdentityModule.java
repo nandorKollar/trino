@@ -16,21 +16,16 @@ package io.trino.filesystem.azure;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
-import io.airlift.configuration.AbstractConfigurationAwareModule;
 
-public class AzureFileSystemModule
-        extends AbstractConfigurationAwareModule
+import static io.airlift.configuration.ConfigBinder.configBinder;
+
+public class AzureAuthWorkloadIdentityModule
+        implements Module
 {
     @Override
-    protected void setup(Binder binder)
+    public void configure(Binder binder)
     {
-        binder.bind(AzureFileSystemFactory.class).in(Scopes.SINGLETON);
-        Module module = switch (buildConfigObject(AzureFileSystemConfig.class).getAuthType()) {
-            case ACCESS_KEY -> new AzureAuthAccessKeyModule();
-            case OAUTH -> new AzureAuthOAuthModule();
-            case DEFAULT -> new AzureAuthDefaultModule();
-            case WORKLOAD_IDENTITY -> new AzureAuthWorkloadIdentityModule();
-        };
-        install(module);
+        configBinder(binder).bindConfig(AzureAuthWorkloadIdentityConfig.class);
+        binder.bind(AzureAuth.class).to(AzureAuthWorkloadIdentity.class).in(Scopes.SINGLETON);
     }
 }
