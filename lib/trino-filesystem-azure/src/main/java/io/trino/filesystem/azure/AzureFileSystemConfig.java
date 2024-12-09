@@ -28,6 +28,7 @@ public class AzureFileSystemConfig
         ACCESS_KEY,
         OAUTH,
         DEFAULT,
+        WORKLOAD_IDENTITY
     }
 
     private AuthType authType = AuthType.DEFAULT;
